@@ -12,6 +12,7 @@
     height: 100px;
     width: 100px;
     background-color: red;
+    position: absolute;
 }
 
 .piece {
@@ -201,4 +202,8 @@
 
 .square-75 {
     transform: translate(700%, 500%);
+}
+
+.square-74 {
+    transform: translate(700%, 400%);
 }

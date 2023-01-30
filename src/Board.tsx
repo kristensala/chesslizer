@@ -1,6 +1,6 @@
 import { Component, createSignal } from "solid-js";
-import { DOMElement } from "solid-js/jsx-runtime";
 import "./board.css";
+import { calculateValidPawnMovement } from "./move";
 import { PointOfView, Square, WhitePOVSquares, BlackPOVSquares } from "./Square";
 
 type Piece = {
@@ -9,7 +9,6 @@ type Piece = {
 }
 
 const Board: Component = () => {
-    const [validSquares, setValidSquares] = createSignal([]);
     const [pointOfView, setPointOfView] = createSignal(PointOfView.White);
     const [squares, setSquares] = createSignal(WhitePOVSquares);
 
@@ -37,7 +36,14 @@ const Board: Component = () => {
 
     const onPieceSelect = (piece: MouseEvent): void => {
         const target = piece.target as HTMLElement;
+    
+        if (target.classList.contains("active")) {
+            target.classList.remove("active");
+            clearActiveSquarePool();
+            return;
+        }
 
+        target.classList.add("active");
         if (target !== null) {
             addValidToMoveSquares(target);
         }
@@ -46,53 +52,29 @@ const Board: Component = () => {
     const addValidToMoveSquares = (piece: HTMLElement) => {
         let pool = document.getElementById("active-square-pool");
 
-        // todo loop to find all valid squares for each piece
-        // currently test one pawn movement
-        let activeSquare = createActiveSquare(pool, "square-75", piece);
-        if (activeSquare == undefined) return;
-
-        pool?.appendChild(activeSquare);
-    }
-
-    const clearActiveSquarePool = () => {
-        let pool = document.getElementById("active-square-pool");
-        let children = pool?.childNodes;
-        if (children !== undefined) {
-            for (let i = 0; i < children?.length; ++i) {
-                pool?.removeChild(children[i]);
-            }
-        }
-    }
-
-    const createActiveSquare = (pool: HTMLElement | null, newPosition: string, piece: HTMLElement) => {
-        let children = pool?.childNodes;
-        if (children !== undefined) {
-            for (let i = 0; i < children?.length; ++i) {
-                let child = children[i] as DOMElement;
-                if (child.id == newPosition) {
-                    clearActiveSquarePool();
-                    return;
-                }
-            }
+        let validSquares: string[] = [];
+        const id = piece.id;
+        // todo: a better way to detect what type of piece is selected
+        if (id.startsWith("wp") || id.startsWith("bp")) {
+            validSquares = calculateValidPawnMovement();
         }
 
+        createActiveSquares(pool, validSquares, piece);
+    }
+
+    const createActiveSquares = (pool: HTMLElement | null, newPositions: string[], piece: HTMLElement) => {
         clearActiveSquarePool();
 
-        const activeSquare = document.createElement("div");
-        activeSquare.setAttribute("id", newPosition);
-        activeSquare.addEventListener("click", () => {
+        for (let i = 0; i < newPositions.length; ++i) {
+            const activeSquare = document.createElement("div");
+            activeSquare.setAttribute("id", newPositions[i]);
+            activeSquare.addEventListener("click", () => {
+                movePiece(piece, newPositions[i]);
+            });
 
-            const currentPos = getCurrentPiecePosition(piece);
-            if (currentPos !== undefined) {
-                piece.classList.replace(currentPos, newPosition);
-            }
-
-            clearActiveSquarePool();
-
-        });
-        activeSquare.className = newPosition;
-
-        return activeSquare;
+            activeSquare.className = newPositions[i];
+            pool?.appendChild(activeSquare);
+        }
     }
 
     const getCurrentPiecePosition = (piece: HTMLElement) => {
@@ -102,8 +84,27 @@ const Board: Component = () => {
         }
     }
 
-    const movePiece = (piece: HTMLElement, toSquare: Square): void => {
-        // todo change class
+    const movePiece = (piece: HTMLElement, newPosition: string): void => {
+        const currentPos = getCurrentPiecePosition(piece);
+        if (currentPos !== undefined) {
+            piece.classList.replace(currentPos, newPosition);
+        }
+        clearActiveSquarePool();
+    }
+
+    const clearActiveSquarePool = () => {
+        let pool = document.getElementById("active-square-pool");
+        let children = pool?.childNodes;
+        if (children !== undefined) {
+            for (let i = 0; i < children?.length; i++) {
+                pool?.removeChild(children[i]);
+            }
+
+            const lastElement = pool?.lastChild;
+            if (lastElement !== null && lastElement !== undefined) {
+                pool?.removeChild(lastElement);
+            }
+        }
     }
 
     return (
