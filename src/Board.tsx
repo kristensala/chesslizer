@@ -88,6 +88,7 @@ const Board: Component = () => {
         const currentPos = getCurrentPiecePosition(piece);
         if (currentPos !== undefined) {
             piece.classList.replace(currentPos, newPosition);
+            piece.classList.remove("active");
         }
         clearActiveSquarePool();
     }
