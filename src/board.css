@@ -1,0 +1,204 @@
+.board {
+    height: 800px;
+    width: 800px;
+    margin: 0 auto;
+    background-image: url('assets/images/150.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: relative;
+}
+
+.active-square-pool > * {
+    height: 100px;
+    width: 100px;
+    background-color: red;
+}
+
+.piece {
+    height: 100px;
+    width: 100px;
+    position: absolute; 
+
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.piece.br {
+    background-image: url("assets/images/br.png");
+}
+
+.piece.bb {
+    background-image: url("assets/images/bb.png");
+}
+
+.piece.bn {
+    background-image: url("assets/images/bn.png");
+}
+
+.piece.bk {
+    background-image: url("assets/images/bk.png");
+}
+
+.piece.bq {
+    background-image: url("assets/images/bq.png");
+}
+
+.piece.bp {
+    background-image: url("assets/images/bp.png");
+}
+
+.piece.wr {
+    background-image: url("assets/images/wr.png");
+}
+
+.piece.wb {
+    background-image: url("assets/images/wb.png");
+}
+
+.piece.wn {
+    background-image: url("assets/images/wn.png");
+}
+
+.piece.wk {
+    background-image: url("assets/images/wk.png");
+}
+
+.piece.wq {
+    background-image: url("assets/images/wq.png");
+}
+
+.piece.wp {
+    background-image: url("assets/images/wp.png");
+}
+
+.square-00 {
+    transform: translate(0%, 0%);
+}
+
+.square-10 {
+    transform: translate(100%, 0%);
+}
+
+.square-20 {
+    transform: translate(200%, 0%);
+}
+
+.square-30 {
+    transform: translate(300%, 0%);
+}
+
+.square-40 {
+    transform: translate(400%, 0%);
+}
+
+.square-50 {
+    transform: translate(500%, 0%);
+}
+
+.square-60 {
+    transform: translate(600%, 0%);
+}
+
+.square-70 {
+    transform: translate(700%, 0%);
+}
+
+.square-01 {
+    transform: translate(0%, 100%);
+}
+
+.square-11 {
+    transform: translate(100%, 100%);
+}
+
+.square-21 {
+    transform: translate(200%, 100%);
+}
+
+.square-31 {
+    transform: translate(300%, 100%);
+}
+
+.square-41 {
+    transform: translate(400%, 100%);
+}
+
+.square-51 {
+    transform: translate(500%, 100%);
+}
+
+.square-61 {
+    transform: translate(600%, 100%);
+}
+
+.square-71 {
+    transform: translate(700%, 100%);
+}
+
+.square-07 {
+    transform: translate(0%, 700%);
+}
+
+.square-17 {
+    transform: translate(100%, 700%);
+}
+
+.square-27 {
+    transform: translate(200%, 700%);
+}
+
+.square-37 {
+    transform: translate(300%, 700%);
+}
+
+.square-47 {
+    transform: translate(400%, 700%);
+}
+
+.square-57 {
+    transform: translate(500%, 700%);
+}
+
+.square-67 {
+    transform: translate(600%, 700%);
+}
+
+.square-77 {
+    transform: translate(700%, 700%);
+}
+
+.square-06 {
+    transform: translate(0%, 600%);
+}
+
+.square-16 {
+    transform: translate(100%, 600%);
+}
+
+.square-26 {
+    transform: translate(200%, 600%);
+}
+
+.square-36 {
+    transform: translate(300%, 600%);
+}
+
+.square-46 {
+    transform: translate(400%, 600%);
+}
+
+.square-56 {
+    transform: translate(500%, 600%);
+}
+
+.square-66 {
+    transform: translate(600%, 600%);
+
+}
+.square-76 {
+    transform: translate(700%, 600%);
+}
+
+.square-75 {
+    transform: translate(700%, 500%);
+}
