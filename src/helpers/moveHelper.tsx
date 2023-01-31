@@ -1,5 +1,11 @@
 import { Square, WhitePOVSquares } from "./squareHelper";
 
+
+type Piece = {
+    name: string,
+    position: string
+}
+
 export const getFen = (board: HTMLDivElement): string => {
     return "fen";
 }
@@ -10,14 +16,14 @@ export const getFen = (board: HTMLDivElement): string => {
 //   [x]
 //[x][x][x]
 //   [P]
-export const calculateValidPawnMovement = (piecesPool: HTMLDivElement, selectedPiece: HTMLDivElement): string[] => {
-    const piecesPositionsOnBoard = getAllPiecesPositionsOnBoard(piecesPool);
-    const currentPieceSquare = getPiecePosition(selectedPiece); 
+export const calculateValidPawnMove = (piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] => {
+    const piecesPositionsOnBoard = getAllPiecesOnBoard(piecesPool);
+    const currentPieceSquare = getPiecePosition(selectedPieceHtml); 
 
     let possibleValidMoves: string[] = [];
     if (currentPieceSquare !== undefined) {
         let newY;
-        if (isWhitePiece(selectedPiece)) { // or POV is Black?????
+        if (isWhitePiece(selectedPieceHtml)) { // or POV is Black?????
             newY = currentPieceSquare.y - 100;
         } else {
             newY = currentPieceSquare.y + 100;
@@ -33,19 +39,39 @@ export const calculateValidPawnMovement = (piecesPool: HTMLDivElement, selectedP
         const takeRightSquare = getSquareBasedOnCoordinates(newX, newY);
 
         if (frontSquare !== undefined) {
-            if (!piecesPositionsOnBoard.includes(frontSquare.class)) {
+            if (!piecesPositionsOnBoard.find((piece) => piece.position == frontSquare.class)) {
                 possibleValidMoves.push(frontSquare.class);
             }
         }
 
+        const selectedPiece = piecesPositionsOnBoard.find((piece) => {
+            if (piece.position == currentPieceSquare.class) {
+                return piece;
+            }
+        });
+
+        if (selectedPiece === undefined) return [];        
+
         if (takeLeftSquare !== undefined) {
-            if (piecesPositionsOnBoard.includes(takeLeftSquare.class)) {
+            const toTakePiece = piecesPositionsOnBoard.find((piece) => {
+                if (piece.position == takeLeftSquare.class) {
+                    return piece;
+                }
+            });
+
+            if (toTakePiece !== undefined && canTake(selectedPiece, toTakePiece)) {
                 possibleValidMoves.push(takeLeftSquare.class);
             }
         }
 
         if (takeRightSquare !== undefined) {
-            if (piecesPositionsOnBoard.includes(takeRightSquare.class)) {
+            const toTakePiece = piecesPositionsOnBoard.find((piece) => {
+                if (piece.position == takeRightSquare.class) {
+                    return piece;
+                }
+            });
+
+            if (toTakePiece !== undefined && canTake(selectedPiece, toTakePiece)) {
                 possibleValidMoves.push(takeRightSquare.class);
             }
         }
@@ -55,14 +81,22 @@ export const calculateValidPawnMovement = (piecesPool: HTMLDivElement, selectedP
     return possibleValidMoves;
 }
 
-export const calculateValidRookMovement = (board: HTMLDivElement, piece: HTMLDivElement) => {
+const canTake = (selectedPiece: Piece, toTakePiece: Piece): boolean => {
+    return isWhitePieceByName(selectedPiece.name) != isWhitePieceByName(toTakePiece.name);
+}
 
+const isWhitePieceByName = (name: string): boolean => {
+    if (name.startsWith("b")) {
+        return false;
+    }
+
+    return true;
 }
 
 const isWhitePiece = (piece: HTMLDivElement): boolean => {
-    const color = piece.classList[1];
+    const name = piece.classList[1];
 
-    if (color.startsWith("b")) {
+    if (name.startsWith("b")) {
         return false;
     }
 
@@ -81,13 +115,16 @@ const getPiecePosition = (piece: HTMLDivElement): Square | undefined => {
     return currentSquare;
 }
 
-const getAllPiecesPositionsOnBoard = (piecesPool: HTMLDivElement): string[] => {
-    let result: string[] = []
+const getAllPiecesOnBoard = (piecesPool: HTMLDivElement): Piece[] => {
+    let result: Piece[] = []
     const pieces = piecesPool.childNodes;
     for (let i = 0; i < pieces.length; ++i) {
         const piece = pieces[i] as HTMLDivElement;
-        const pos = piece.classList[2];
-        result.push(pos);
+        const newPiece: Piece = {
+            name: piece.classList[1],
+            position: piece.classList[2]
+        };
+        result.push(newPiece);
     }
 
     return result;

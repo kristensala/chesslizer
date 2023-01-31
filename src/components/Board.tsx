@@ -1,6 +1,6 @@
 import { Component, createSignal } from "solid-js";
 import "../css/board.css";
-import { calculateValidPawnMovement } from "../helpers/moveHelper";
+import { calculateValidPawnMove } from "../helpers/moveHelper";
 import { PointOfView, Square, WhitePOVSquares, BlackPOVSquares } from "../helpers/squareHelper";
 
 const Board: Component = () => {
@@ -49,7 +49,7 @@ const Board: Component = () => {
         const id = piece.id;
         // todo: a better way to detect what type of piece is selected
         if (id.startsWith("wp") || id.startsWith("bp")) {
-            validSquares = calculateValidPawnMovement(piecesPool, piece);
+            validSquares = calculateValidPawnMove(piecesPool, piece);
         }
 
         createActiveSquares(activeSquarePool, validSquares, piece);
@@ -114,13 +114,13 @@ const Board: Component = () => {
                 <div id="bb2" class="piece bb square-50"></div> 
                 <div id="bk" class="piece bk square-40"></div> 
                 <div id="bq" class="piece bq square-30"></div> 
-                <div id="bp1" class="piece bp square-01"></div> 
-                <div id="bp2" class="piece bp square-11"></div> 
-                <div id="bp3" class="piece bp square-21"></div> 
-                <div id="bp4" class="piece bp square-31"></div> 
-                <div id="bp5" class="piece bp square-41"></div> 
-                <div id="bp6" class="piece bp square-51"></div> 
-                <div id="bp7" class="piece bp square-61"></div> 
+                <div id="bp1" class="piece bp square-01" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="bp2" class="piece bp square-11" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="bp3" class="piece bp square-21" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="bp4" class="piece bp square-31" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="bp5" class="piece bp square-41" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="bp6" class="piece bp square-51" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="bp7" class="piece bp square-61" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bp8" class="piece bp square-71" onclick={(e) => onPieceSelect(e)}></div> 
 
                 <div id="wr1" class="piece wr square-07"></div> 
@@ -131,17 +131,18 @@ const Board: Component = () => {
                 <div id="wb2" class="piece wb square-57"></div> 
                 <div id="wk" class="piece wk square-47"></div> 
                 <div id="wq" class="piece wq square-37"></div> 
-                <div id="wp1" class="piece wp square-06"></div> 
-                <div id="wp2" class="piece wp square-16"></div> 
-                <div id="wp3" class="piece wp square-26"></div> 
-                <div id="wp4" class="piece wp square-36"></div> 
-                <div id="wp5" class="piece wp square-46"></div> 
-                <div id="wp6" class="piece wp square-56"></div> 
-                <div id="wp7" class="piece wp square-66"></div> 
+                <div id="wp1" class="piece wp square-06" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="wp2" class="piece wp square-16" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="wp3" class="piece wp square-26" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="wp4" class="piece wp square-36" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="wp5" class="piece wp square-46" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="wp6" class="piece wp square-56" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="wp7" class="piece wp square-66" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wp8" class="piece wp square-76" onclick={(e) => onPieceSelect(e)}></div>
             </div>
             
             <div id="active-square-pool" class="active-square-pool"></div>
+            <div id="removed-piece-pool" class="removed-piece-pool"></div>
         </div>
     );
 }
