@@ -16,33 +16,37 @@ export const calculateValidPawnMovement = (piecesPool: HTMLDivElement, selectedP
 
     let possibleValidMoves: string[] = [];
     if (currentPieceSquare !== undefined) {
+        let newY;
         if (isWhitePiece(selectedPiece)) { // or POV is Black?????
-            let newY = currentPieceSquare.y - 100;
-            let newX = currentPieceSquare.x;
-            const frontSquare = getSquareBasedOnCoordinates(newX, newY);
+            newY = currentPieceSquare.y - 100;
+        } else {
+            newY = currentPieceSquare.y + 100;
+        }
 
-            newX = currentPieceSquare.x - 100;
-            const takeLeftSquare = getSquareBasedOnCoordinates(newX, newY);
+        let newX = currentPieceSquare.x;
+        const frontSquare = getSquareBasedOnCoordinates(newX, newY);
 
-            newX = currentPieceSquare.x + 100;
-            const takeRightSquare = getSquareBasedOnCoordinates(newX, newY);
+        newX = currentPieceSquare.x - 100;
+        const takeLeftSquare = getSquareBasedOnCoordinates(newX, newY);
 
-            if (frontSquare !== undefined) {
-                if (!piecesPositionsOnBoard.includes(frontSquare.class)) {
-                    possibleValidMoves.push(frontSquare.class);
-                }
+        newX = currentPieceSquare.x + 100;
+        const takeRightSquare = getSquareBasedOnCoordinates(newX, newY);
+
+        if (frontSquare !== undefined) {
+            if (!piecesPositionsOnBoard.includes(frontSquare.class)) {
+                possibleValidMoves.push(frontSquare.class);
             }
+        }
 
-            if (takeLeftSquare !== undefined) {
-                if (piecesPositionsOnBoard.includes(takeLeftSquare.class)) {
-                    possibleValidMoves.push(takeLeftSquare.class);
-                }
+        if (takeLeftSquare !== undefined) {
+            if (piecesPositionsOnBoard.includes(takeLeftSquare.class)) {
+                possibleValidMoves.push(takeLeftSquare.class);
             }
+        }
 
-            if (takeRightSquare !== undefined) {
-                if (piecesPositionsOnBoard.includes(takeRightSquare.class)) {
-                    possibleValidMoves.push(takeRightSquare.class);
-                }
+        if (takeRightSquare !== undefined) {
+            if (piecesPositionsOnBoard.includes(takeRightSquare.class)) {
+                possibleValidMoves.push(takeRightSquare.class);
             }
         }
     }

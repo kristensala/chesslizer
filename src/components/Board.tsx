@@ -77,6 +77,7 @@ const Board: Component = () => {
         }
     }
 
+    // TODO: detect if is take 
     const movePiece = (piece: HTMLElement, newPosition: string): void => {
         const currentPos = getCurrentPiecePosition(piece);
         if (currentPos !== undefined) {
@@ -120,7 +121,7 @@ const Board: Component = () => {
                 <div id="bp5" class="piece bp square-41"></div> 
                 <div id="bp6" class="piece bp square-51"></div> 
                 <div id="bp7" class="piece bp square-61"></div> 
-                <div id="bp8" class="piece bp square-71"></div> 
+                <div id="bp8" class="piece bp square-71" onclick={(e) => onPieceSelect(e)}></div> 
 
                 <div id="wr1" class="piece wr square-07"></div> 
                 <div id="wr2" class="piece wr square-77"></div> 
