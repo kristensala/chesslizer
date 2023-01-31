@@ -1,10 +1,11 @@
-import { Square, WhitePOVSquares } from "./Square";
+import { Square, WhitePOVSquares } from "./squareHelper";
 
 export const getFen = (board: HTMLDivElement): string => {
     return "fen";
 }
 
 //TODO: have to take into account also the POV. 
+// TODO: pawn en passant move
 // All possible moves with different conditions
 //   [x]
 //[x][x][x]
@@ -16,18 +17,36 @@ export const calculateValidPawnMovement = (piecesPool: HTMLDivElement, selectedP
     let possibleValidMoves: string[] = [];
     if (currentPieceSquare !== undefined) {
         if (isWhitePiece(selectedPiece)) { // or POV is Black?????
-            let newY = currentPieceSquare.y - 100; // check for board boundary and if pawn makes the first move
+            let newY = currentPieceSquare.y - 100;
             let newX = currentPieceSquare.x;
-            
-            const square = getSquareBasedOnCoordinates(newX, newY);
-            if (square !== undefined) {
-                possibleValidMoves.push(square.class);
+            const frontSquare = getSquareBasedOnCoordinates(newX, newY);
+
+            newX = currentPieceSquare.x - 100;
+            const takeLeftSquare = getSquareBasedOnCoordinates(newX, newY);
+
+            newX = currentPieceSquare.x + 100;
+            const takeRightSquare = getSquareBasedOnCoordinates(newX, newY);
+
+            if (frontSquare !== undefined) {
+                if (!piecesPositionsOnBoard.includes(frontSquare.class)) {
+                    possibleValidMoves.push(frontSquare.class);
+                }
+            }
+
+            if (takeLeftSquare !== undefined) {
+                if (piecesPositionsOnBoard.includes(takeLeftSquare.class)) {
+                    possibleValidMoves.push(takeLeftSquare.class);
+                }
+            }
+
+            if (takeRightSquare !== undefined) {
+                if (piecesPositionsOnBoard.includes(takeRightSquare.class)) {
+                    possibleValidMoves.push(takeRightSquare.class);
+                }
             }
         }
     }
 
-    //TODO: check moves agains pieces position on the board to see if i can actually make them
-    // if moves contains a square from piecesPositionsOnBoard then remove from the moves array
     console.log(possibleValidMoves);
     return possibleValidMoves;
 }

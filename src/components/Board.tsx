@@ -1,12 +1,7 @@
 import { Component, createSignal } from "solid-js";
 import "../css/board.css";
-import { calculateValidPawnMovement } from "../move";
-import { PointOfView, Square, WhitePOVSquares, BlackPOVSquares } from "../Square";
-
-type Piece = {
-    name: String,
-    position: String
-}
+import { calculateValidPawnMovement } from "../helpers/moveHelper";
+import { PointOfView, Square, WhitePOVSquares, BlackPOVSquares } from "../helpers/squareHelper";
 
 const Board: Component = () => {
     const [forceRules, setForceRules] = createSignal(true);
