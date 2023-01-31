@@ -1,75 +1,81 @@
+:root {
+    --board-size: 700px;
+}
+
 .board {
-    height: 800px;
-    width: 800px;
+    height: var(--board-size);
+    width: var(--board-size);
     margin: 0 auto;
-    background-image: url('assets/images/150.png');
+    background-image: url("../assets/images/150.png");
     background-repeat: no-repeat;
     background-size: contain;
     position: relative;
 }
 
 .active-square-pool > * {
-    height: 100px;
-    width: 100px;
+    height: calc(var(--board-size) / 8);
+    width: calc(var(--board-size) / 8);
     background-color: red;
     position: absolute;
+    cursor: pointer;
 }
 
 .piece {
-    height: 100px;
-    width: 100px;
+    height: calc(var(--board-size) / 8);
+    width: calc(var(--board-size) / 8);
     position: absolute; 
+    cursor: pointer;
 
     background-repeat: no-repeat;
     background-size: cover;
 }
 
 .piece.br {
-    background-image: url("assets/images/br.png");
+    background-image: url("../assets/images/br.png");
 }
 
 .piece.bb {
-    background-image: url("assets/images/bb.png");
+    background-image: url("../assets/images/bb.png");
 }
 
 .piece.bn {
-    background-image: url("assets/images/bn.png");
+    background-image: url("../assets/images/bn.png");
 }
 
 .piece.bk {
-    background-image: url("assets/images/bk.png");
+    background-image: url("../assets/images/bk.png");
 }
 
 .piece.bq {
-    background-image: url("assets/images/bq.png");
+    background-image: url("../assets/images/bq.png");
 }
 
 .piece.bp {
-    background-image: url("assets/images/bp.png");
+    background-image: url("../assets/images/bp.png");
 }
 
 .piece.wr {
-    background-image: url("assets/images/wr.png");
+    background-image: url("../assets/images/wr.png");
 }
 
 .piece.wb {
-    background-image: url("assets/images/wb.png");
+    background-image: url("../assets/images/wb.png");
 }
 
 .piece.wn {
-    background-image: url("assets/images/wn.png");
+    background-image: url("../assets/images/wn.png");
 }
 
 .piece.wk {
-    background-image: url("assets/images/wk.png");
+    background-image: url("../assets/images/wk.png");
 }
 
 .piece.wq {
-    background-image: url("assets/images/wq.png");
+    background-image: url("../assets/images/wq.png");
 }
 
 .piece.wp {
-    background-image: url("assets/images/wp.png");
+    background-image: url("../assets/images/wp.png");
 }
 
 .square-00 {
