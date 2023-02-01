@@ -26,13 +26,24 @@ const Board: Component = () => {
 
     }
 
+    // TODO: remove activity from other pieces not just the target
     const onPieceSelect = (piece: MouseEvent): void => {
+        const piecesPool = document.getElementById("pieces-pool") as HTMLDivElement;
+        const pieces = piecesPool.childNodes;
         const target = piece.target as HTMLDivElement;
     
         if (target.classList.contains("active")) {
             target.classList.remove("active");
             clearActiveSquarePool();
             return;
+        }
+
+        for (let i = 0; i < pieces.length; ++i) {
+            const piece = pieces[i] as HTMLDivElement;
+            const classList = piece.classList;
+            if (classList.contains("active")) {
+                piece.classList.remove("active");
+            }
         }
 
         target.classList.add("active");
@@ -87,6 +98,7 @@ const Board: Component = () => {
 
         if (currentPos !== undefined) {
             takePiece(piecesPool, newPosition);
+
             piece.classList.replace(currentPos, newPosition);
             piece.classList.remove("active");
         }
@@ -102,7 +114,6 @@ const Board: Component = () => {
             const piecePosition = pieceOnTheBoard.classList[2];
 
             if (piecePosition == newPosition) {
-                console.log("test", piecePosition);
                 piecesPool.removeChild(pieceOnTheBoard);
                 break;
             }
