@@ -10,6 +10,20 @@ export type Square = {
     y: number
 };
 
+export const getSquareByClassName = (className: string): Square | undefined => {
+    return WhitePOVSquares.find((square) => square.class == className);
+}
+
+
+export const getSquareBasedOnCoordinates = (x: number, y: number): Square | undefined => {
+    let newSquare = WhitePOVSquares.find((square) => {
+        if (square.x == x && square.y == y) {
+            return square;
+        }
+    });
+    return newSquare
+}
+
 export const WhitePOVSquares: Square[] = [
     { name: "a1", class: "square-07", x: 0, y: 700 },
     { name: "b1", class: "square-17", x: 100, y: 700 },
