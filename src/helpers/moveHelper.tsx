@@ -128,9 +128,10 @@ const getValidRookMovesOnFile = (piece: Piece, board: Piece[]): string[] => {
     let indexToNorth = currentPieceY - 100;
     for (indexToNorth; indexToNorth >= 0; indexToNorth -= 100) {
         const foundPiece = otherPiecesOnSameFile.find((piece) => piece.y == indexToNorth);
+        const validSquare = getSquareBasedOnCoordinates(currentPieceX, indexToNorth);
+
         if (foundPiece) {
             if (canTake(piece, foundPiece)) {
-                const validSquare = getSquareBasedOnCoordinates(currentPieceX, indexToNorth);
                 if (validSquare !== undefined) { 
                     validMoves.push(validSquare.class);
                 }
@@ -138,7 +139,6 @@ const getValidRookMovesOnFile = (piece: Piece, board: Piece[]): string[] => {
             break;
         }
 
-        const validSquare = getSquareBasedOnCoordinates(currentPieceX, indexToNorth);
         if (validSquare !== undefined) { 
             validMoves.push(validSquare.class);
         }
@@ -147,9 +147,10 @@ const getValidRookMovesOnFile = (piece: Piece, board: Piece[]): string[] => {
     let indexToSouth = currentPieceY + 100;
     for (indexToSouth; indexToSouth <= 700; indexToSouth += 100) {
         const foundPiece = otherPiecesOnSameFile.find((piece) => piece.y == indexToSouth);
+        const validSquare = getSquareBasedOnCoordinates(currentPieceX, indexToSouth);
+
         if (foundPiece) {
             if (canTake(piece, foundPiece)) {
-                const validSquare = getSquareBasedOnCoordinates(currentPieceX, indexToNorth);
                 if (validSquare !== undefined) { 
                     validMoves.push(validSquare.class);
                 }
@@ -157,7 +158,6 @@ const getValidRookMovesOnFile = (piece: Piece, board: Piece[]): string[] => {
             break;
         }
 
-        const validSquare = getSquareBasedOnCoordinates(currentPieceX, indexToSouth);
         if (validSquare !== undefined) { 
             validMoves.push(validSquare.class);
         }
@@ -175,9 +175,10 @@ const getValidRookMovesOnRow = (piece: Piece, board: Piece[]): string[] => {
     let indexToRight = currentPieceX + 100;
     for (indexToRight; indexToRight <= 700; indexToRight += 100) {
         const foundPiece = otherPiecesOnSameRow.find((piece) => piece.x == indexToRight);
+        const validSquare = getSquareBasedOnCoordinates(indexToRight, currentPieceY);
+
         if (foundPiece) {
             if (canTake(piece, foundPiece)) {
-                const validSquare = getSquareBasedOnCoordinates(indexToRight, currentPieceY);
                 if (validSquare !== undefined) { 
                     validMoves.push(validSquare.class);
                 }
@@ -185,7 +186,6 @@ const getValidRookMovesOnRow = (piece: Piece, board: Piece[]): string[] => {
             break;
         }
         
-        const validSquare = getSquareBasedOnCoordinates(indexToRight, currentPieceY);
         if (validSquare !== undefined) {
             validMoves.push(validSquare?.class);
         }
@@ -213,49 +213,9 @@ const getValidRookMovesOnRow = (piece: Piece, board: Piece[]): string[] => {
     return validMoves;
 }
 
-
-// TODO: this is really broken
-const getRookMoves = (currentPiece: Piece, possibleMoves: Coordinate[], piecesPositionsOnBoard: Piece[]) => {
-    let rowMoves = [];
-    for (let i = 0; i < possibleMoves.length; ++i) {
-        const coord: Coordinate = possibleMoves[i];
-        const square = WhitePOVSquares.find((square) => square.x == coord.x && square.y == coord.y);
-
-        if (square !== undefined) {
-            const [hasPieceOnSquare, pieceOnSquare] = squareHasPiece(square, piecesPositionsOnBoard);
-            if (pieceOnSquare === undefined) {
-                rowMoves.push(square.class);
-                continue;
-            }
-
-            if (hasPieceOnSquare) {
-                if (canTake(currentPiece, pieceOnSquare)) {
-                    rowMoves.push(square.class);
-                    break;
-                }
-                continue;
-
-            }
-
-            rowMoves.push(square.class);
-        }
-    }
-
-    return rowMoves;
-}
-
-
 const getPiece = (pieceHtml: HTMLDivElement, piecesPositionsOnBoard: Piece[]): Piece | undefined => {
     const pieceClass = pieceHtml.classList[2];
     return piecesPositionsOnBoard.find((piece) => piece.position == pieceClass);
-}
-
-const squareHasPiece = (square: Square, board: Piece[]): [boolean, Piece | undefined] => {
-    const pieceOnSquare = board.find((piece) => piece.position == square.class);
-    if (pieceOnSquare !== undefined) {
-        return [true, pieceOnSquare];
-    }
-    return [false, undefined];
 }
 
 const canTake = (selectedPiece: Piece, toTakePiece: Piece): boolean => {

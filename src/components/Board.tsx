@@ -52,7 +52,7 @@ const Board: Component = () => {
             validSquares = calculateValidPawnMove(piecesPool, piece);
         }
 
-        if (id.startsWith("wr")) {
+        if (id.startsWith("wr") || id.startsWith("br")) {
             validSquares = calculateValidRookMoves(piecesPool, piece);
         }
 
@@ -109,8 +109,8 @@ const Board: Component = () => {
     return (
         <div id="board" class="board">
             <div id="pieces-pool">
-                <div id="br1" class="piece br square-00"></div> 
-                <div id="br2" class="piece br square-70"></div> 
+                <div id="br1" class="piece br square-00" onclick={(e) => onPieceSelect(e)}></div> 
+                <div id="br2" class="piece br square-70" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bn1" class="piece bn square-10"></div> 
                 <div id="bn2" class="piece bn square-60"></div> 
                 <div id="bb1" class="piece bb square-20"></div> 
@@ -127,7 +127,7 @@ const Board: Component = () => {
                 <div id="bp8" class="piece bp square-71" onclick={(e) => onPieceSelect(e)}></div> 
 
                 <div id="wr1" class="piece wr square-07" onclick={(e) => onPieceSelect(e)}></div> 
-                <div id="wr2" class="piece wr square-77"></div> 
+                <div id="wr2" class="piece wr square-77" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wn1" class="piece wn square-17"></div> 
                 <div id="wn2" class="piece wn square-67"></div> 
                 <div id="wb1" class="piece wb square-27"></div> 
