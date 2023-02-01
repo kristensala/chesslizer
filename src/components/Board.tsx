@@ -81,14 +81,32 @@ const Board: Component = () => {
         }
     }
 
-    // TODO: detect if is take 
     const movePiece = (piece: HTMLElement, newPosition: string): void => {
+        const piecesPool = document.getElementById("pieces-pool") as HTMLDivElement;
         const currentPos = getCurrentPiecePosition(piece);
+
         if (currentPos !== undefined) {
+            takePiece(piecesPool, newPosition);
             piece.classList.replace(currentPos, newPosition);
             piece.classList.remove("active");
         }
+
         clearActiveSquarePool();
+    }
+
+    const takePiece = (piecesPool: HTMLDivElement, newPosition: string) => {
+        let allPieces = piecesPool.childNodes;
+        
+        for (let i = 0; i < allPieces.length; ++i) {
+            const pieceOnTheBoard = allPieces[i] as HTMLDivElement;
+            const piecePosition = pieceOnTheBoard.classList[2];
+
+            if (piecePosition == newPosition) {
+                console.log("test", piecePosition);
+                piecesPool.removeChild(pieceOnTheBoard);
+                break;
+            }
+        }
     }
 
     const clearActiveSquarePool = () => {
