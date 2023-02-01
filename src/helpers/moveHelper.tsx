@@ -19,10 +19,6 @@ type Piece = {
 }
 
 // TODO: pawn en passant move
-// All possible moves with different conditions
-//   [x]
-//[x][x][x]
-//   [P]
 export const calculateValidPawnMove = (piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] => {
     const piecesPositionsOnBoard = getAllPiecesOnBoard(piecesPool);
     const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
@@ -86,31 +82,6 @@ export const calculateValidRookMoves = (piecesPool: HTMLDivElement, selectedPiec
 
     if (currentPiece === undefined) return [];
 
-    let movesOnFile: Coordinate[] = [];
-    let movesOnRow: Coordinate[] = [];
-
-    for (let i = 0; i <= 700; i += 100) {
-        if (i == currentPiece.y) continue;
-
-        const coord: Coordinate = {
-            x: currentPiece.x,
-            y: i
-        }
-        movesOnFile.push(coord);
-    }
-
-    for (let i = 0; i <= 700; i += 100) {
-        if (i == currentPiece.x) continue;
-
-        const coord: Coordinate = {
-            x: i,
-            y: currentPiece.y
-        }
-        movesOnRow.push(coord);
-    }
-
-    console.log("fileMoves:", movesOnFile);
-    console.log("board", piecesPositionsOnBoard);
     let fileMoves = getValidRookMovesOnFile(currentPiece, piecesPositionsOnBoard);
     let rowMoves = getValidRookMovesOnRow(currentPiece, piecesPositionsOnBoard);
 
