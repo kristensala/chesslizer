@@ -15,7 +15,10 @@
 .active-square-pool > * {
     height: calc(var(--board-size) / 8);
     width: calc(var(--board-size) / 8);
-    background-color: red;
+    background-color: green;
+    border-radius: 50%;
+    opacity: .7;
+    z-index: 10000;
     position: absolute;
     cursor: pointer;
 }
@@ -28,6 +31,10 @@
 
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+.piece.active {
+    background-color: rgb(255, 255, 153);
 }
 
 .piece.br {
