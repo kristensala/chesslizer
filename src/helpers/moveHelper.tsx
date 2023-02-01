@@ -1,5 +1,9 @@
 import { Square, WhitePOVSquares } from "./squareHelper";
 
+type Coordinates = {
+    x: number,
+    y: number
+}
 
 type Piece = {
     name: string,
@@ -80,6 +84,56 @@ export const calculateValidPawnMove = (piecesPool: HTMLDivElement, selectedPiece
     console.log(possibleValidMoves);
     return possibleValidMoves;
 }
+
+export const calculateValidRookMoves = (piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] => {
+    const piecesPositionsOnBoard = getAllPiecesOnBoard(piecesPool);
+    const currentPieceSquare = getPiecePosition(selectedPieceHtml); 
+    
+    if (currentPieceSquare === undefined) return [];
+
+    // boundaries 0 - 700 both ways
+    
+    // build moves
+    let movesOnFile: Coordinates[] = [];
+    let movesOnRow: Coordinates[] = [];
+
+    for (let i = 0; i <= 700; i += 100) {
+        if (i == currentPieceSquare.y) continue;
+
+        const coord: Coordinates = {
+            x: currentPieceSquare.x,
+            y: i
+        }
+        movesOnFile.push(coord);
+    }
+
+    for (let i = 0; i <= 700; i += 100) {
+        if (i == currentPieceSquare.x) continue;
+
+        const coord: Coordinates = {
+            x: i,
+            y: currentPieceSquare.y
+        }
+        movesOnRow.push(coord);
+    }
+
+    const fileMoves = movesOnFile.map((coord) => {
+        const square = WhitePOVSquares.find((square) => square.x == coord.x && square.y == coord.y);
+        return square !== undefined ? square.class : "";
+    });
+
+    const rowMoves = movesOnRow.map((coord) => {
+        const square = WhitePOVSquares.find((square) => square.x == coord.x && square.y == coord.y);
+        return square !== undefined ? square.class : "";
+    });
+
+    //todo: break the moves if piece detected on the way
+
+    const result = fileMoves.concat(rowMoves);
+    console.log(result);
+    return result;
+}
+
 
 const canTake = (selectedPiece: Piece, toTakePiece: Piece): boolean => {
     return isWhitePieceByName(selectedPiece.name) != isWhitePieceByName(toTakePiece.name);

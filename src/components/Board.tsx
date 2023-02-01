@@ -1,6 +1,6 @@
 import { Component, createSignal } from "solid-js";
 import "../css/board.css";
-import { calculateValidPawnMove } from "../helpers/moveHelper";
+import { calculateValidPawnMove, calculateValidRookMoves } from "../helpers/moveHelper";
 import { PointOfView, Square, WhitePOVSquares, BlackPOVSquares } from "../helpers/squareHelper";
 
 const Board: Component = () => {
@@ -52,6 +52,10 @@ const Board: Component = () => {
             validSquares = calculateValidPawnMove(piecesPool, piece);
         }
 
+        if (id.startsWith("wr")) {
+            validSquares = calculateValidRookMoves(piecesPool, piece);
+        }
+
         createActiveSquares(activeSquarePool, validSquares, piece);
     }
 
@@ -92,13 +96,12 @@ const Board: Component = () => {
         const children = pool?.childNodes;
 
         if (children !== undefined) {
-            for (let i = 0; i < children?.length; i++) {
-                pool?.removeChild(children[i]);
-            }
-
-            const lastElement = pool?.lastChild;
-            if (lastElement !== null && lastElement !== undefined) {
-                pool?.removeChild(lastElement);
+            while (children.length > 0) {
+                const lastElement = pool?.lastChild;
+                if (lastElement !== null && lastElement !== undefined) {
+                    pool?.removeChild(lastElement);
+                    console.log("remove active pool element");
+                }
             }
         }
     }
@@ -123,7 +126,7 @@ const Board: Component = () => {
                 <div id="bp7" class="piece bp square-61" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bp8" class="piece bp square-71" onclick={(e) => onPieceSelect(e)}></div> 
 
-                <div id="wr1" class="piece wr square-07"></div> 
+                <div id="wr1" class="piece wr square-07" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wr2" class="piece wr square-77"></div> 
                 <div id="wn1" class="piece wn square-17"></div> 
                 <div id="wn2" class="piece wn square-67"></div> 
