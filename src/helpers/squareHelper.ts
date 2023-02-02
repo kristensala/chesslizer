@@ -10,12 +10,11 @@ export type Square = {
     y: number
 };
 
-export const getSquareByClassName = (className: string): Square | undefined => {
+export function getSquareByClassName(className: string): Square | undefined {
     return WhitePOVSquares.find((square) => square.class == className);
 }
 
-
-export const getSquareBasedOnCoordinates = (x: number, y: number): Square | undefined => {
+export function getSquareBasedOnCoordinates(x: number, y: number): Square | undefined {
     let newSquare = WhitePOVSquares.find((square) => {
         if (square.x == x && square.y == y) {
             return square;

@@ -19,7 +19,7 @@ type Piece = {
 }
 
 // TODO: pawn en passant move
-export const calculateValidPawnMove = (piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] => {
+export function calculateValidPawnMove(piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] {
     const piecesPositionsOnBoard = getAllPiecesOnBoard(piecesPool);
     const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
 
@@ -76,7 +76,7 @@ export const calculateValidPawnMove = (piecesPool: HTMLDivElement, selectedPiece
     return possibleValidMoves;
 }
 
-export const calculateValidRookMoves = (piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] => {
+export function calculateValidRookMoves(piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] {
     const piecesPositionsOnBoard = getAllPiecesOnBoard(piecesPool);
     const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
 
@@ -89,7 +89,7 @@ export const calculateValidRookMoves = (piecesPool: HTMLDivElement, selectedPiec
     return result;
 }
 
-const getValidRookMovesOnFile = (piece: Piece, board: Piece[]): string[] => {
+function getValidRookMovesOnFile(piece: Piece, board: Piece[]): string[] {
     let validMoves: string[] = [];
 
     const otherPiecesOnSameFile = board.filter((otherPiece) => otherPiece.x == piece.x && otherPiece.y != piece.y);
@@ -136,7 +136,7 @@ const getValidRookMovesOnFile = (piece: Piece, board: Piece[]): string[] => {
     return validMoves;
 }
 
-const getValidRookMovesOnRow = (piece: Piece, board: Piece[]): string[] => {
+function getValidRookMovesOnRow(piece: Piece, board: Piece[]): string[] {
     let validMoves: string[] = [];
 
     const otherPiecesOnSameRow = board.filter((otherPiece) => otherPiece.y == piece.y && otherPiece.x != piece.x);
@@ -184,16 +184,64 @@ const getValidRookMovesOnRow = (piece: Piece, board: Piece[]): string[] => {
     return validMoves;
 }
 
-const getPiece = (pieceHtml: HTMLDivElement, piecesPositionsOnBoard: Piece[]): Piece | undefined => {
+export function calculateValidKnightMoves(piecesPoolHtml: HTMLDivElement, selectedPieceHtml: HTMLDivElement) {
+    // moves 8 is there a pattern??
+    // y - 200 x - 100
+    // y - 200 x + 100
+    // y - 100 x + 200
+    // y + 100 x + 200
+    // y + 200 x + 100
+    // y + 200 x - 100
+    // y + 100 x - 200
+    // y - 100 x - 200
+    let validMoves: string[] = [];
+
+    const piecesPositionsOnBoard = getAllPiecesOnBoard(piecesPoolHtml);
+    const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
+
+    if (currentPiece == undefined) {
+        return [];
+    }
+
+    const currentPieceX = currentPiece.x;
+    const currentPieceY = currentPiece.y;
+
+    const coords: Coordinate[] = [
+        {x: -100, y: -200},
+        {x: 100, y: -200},
+        {x: 200, y: -100},
+        {x: 200, y: 100},
+        {x: 100, y: 200},
+        {x: -100, y: 200},
+        {x: -200, y: 100},
+        {x: -200, y: -100},
+    ]
+
+    for (let i = 0; i < coords.length; ++i) {
+        const coordinate = coords[i];
+        const square = getSquareBasedOnCoordinates(currentPieceX + coordinate.x, currentPieceY + coordinate.y);
+
+        if (square) {
+            const pieceOnSquare = piecesPositionsOnBoard.find((checkPiece) => checkPiece.x == square.x && checkPiece.y == square.y);
+            if (pieceOnSquare?.isWhite != currentPiece.isWhite) {
+                validMoves.push(square.class);
+            }
+        }
+    }
+
+    return validMoves;
+}
+
+function getPiece(pieceHtml: HTMLDivElement, piecesPositionsOnBoard: Piece[]): Piece | undefined {
     const pieceClass = pieceHtml.classList[2];
     return piecesPositionsOnBoard.find((piece) => piece.position == pieceClass);
 }
 
-const canTake = (selectedPiece: Piece, toTakePiece: Piece): boolean => {
+function canTake(selectedPiece: Piece, toTakePiece: Piece): boolean {
     return isWhitePieceByName(selectedPiece.name) != isWhitePieceByName(toTakePiece.name);
 }
 
-const isWhitePieceByName = (name: string): boolean => {
+function isWhitePieceByName(name: string): boolean {
     if (name.startsWith("b")) {
         return false;
     }
@@ -201,7 +249,7 @@ const isWhitePieceByName = (name: string): boolean => {
     return true;
 }
 
-const getAllPiecesOnBoard = (piecesPool: HTMLDivElement): Piece[] => {
+function getAllPiecesOnBoard(piecesPool: HTMLDivElement): Piece[] {
     let result: Piece[] = []
     const pieces = piecesPool.childNodes;
     for (let i = 0; i < pieces.length; ++i) {
