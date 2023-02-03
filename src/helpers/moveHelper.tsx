@@ -9,6 +9,16 @@ export enum Turn {
     Black
 }
 
+//  0;0      x     700;0
+//   - - - - - - - -
+//   -
+//   -
+//   -
+// y -
+//   -
+//   -
+//   - 0;700
+//
 type Coordinate = {
     x: number,
     y: number

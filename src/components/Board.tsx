@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import "../css/board.css";
 import { calculateMoves, Turn } from "../helpers/moveHelper";
 
-function Board() {
+export default function Board() {
     const [turn, setTurn] = createSignal(Turn.White);
     const [canKingSideCastle, setCanKingSideCastle] = createSignal(true);
     const [canQueenSideCastle, setCanQueenSideCastle] = createSignal(true);
@@ -164,4 +164,3 @@ function Board() {
     );
 }
 
-export default Board;
