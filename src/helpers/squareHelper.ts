@@ -1,4 +1,4 @@
-export enum PointOfView {
+export enum Turn {
     White,
     Black
 }

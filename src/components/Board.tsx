@@ -1,31 +1,40 @@
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import "../css/board.css";
 import { calculateMoves } from "../helpers/moveHelper";
+import { Turn } from "../helpers/squareHelper";
 
 const Board: Component = () => {
+    const [turn, setTurn] = createSignal(Turn.White);
+    const [canKingSideCastle, setCanKingSideCastle] = createSignal(true);
+    const [canQueenSideCastle, setCanQueenSideCastle] = createSignal(true);
+
+
     // TODO: remove activity from other pieces not just the target
     const onPieceSelect = (piece: MouseEvent): void => {
         const piecesPool = document.getElementById("pieces-pool") as HTMLDivElement;
         const pieces = piecesPool.childNodes;
         const target = piece.target as HTMLDivElement;
-    
-        if (target.classList.contains("active")) {
-            target.classList.remove("active");
-            clearActiveSquarePool();
-            return;
-        }
-
-        for (let i = 0; i < pieces.length; ++i) {
-            const piece = pieces[i] as HTMLDivElement;
-            const classList = piece.classList;
-            if (classList.contains("active")) {
-                piece.classList.remove("active");
+        const isWhite = target.classList[1].includes("w");
+       
+        if ((turn() == Turn.White && isWhite) || turn() == Turn.Black && !isWhite) {
+            if (target.classList.contains("active")) {
+                target.classList.remove("active");
+                clearActiveSquarePool();
+                return;
             }
-        }
 
-        target.classList.add("active");
-        if (target !== null) {
-            addValidToMoveSquares(target);
+            for (let i = 0; i < pieces.length; ++i) {
+                const piece = pieces[i] as HTMLDivElement;
+                const classList = piece.classList;
+                if (classList.contains("active")) {
+                    piece.classList.remove("active");
+                }
+            }
+
+            target.classList.add("active");
+            if (target !== null) {
+                addValidToMoveSquares(target);
+            }
         }
     }
 
@@ -33,7 +42,7 @@ const Board: Component = () => {
         let piecesPool = document.getElementById("pieces-pool") as HTMLDivElement;
         let activeSquarePool = document.getElementById("active-square-pool");
 
-        let validSquares: string[] = calculateMoves(piecesPool, piece);
+        let validSquares: string[] = calculateMoves(piecesPool, piece, turn());
 
         createActiveSquares(activeSquarePool, validSquares, piece);
     }
@@ -69,6 +78,15 @@ const Board: Component = () => {
 
             piece.classList.replace(currentPos, newPosition);
             piece.classList.remove("active");
+        }
+
+        switch (turn()) {
+            case Turn.White:
+                setTurn(Turn.Black);
+                break;
+            case Turn.Black:
+                setTurn(Turn.White);
+                break;
         }
 
         clearActiveSquarePool();
@@ -112,7 +130,7 @@ const Board: Component = () => {
                 <div id="bn2" class="piece bn square-60" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bb1" class="piece bb square-20" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bb2" class="piece bb square-50" onclick={(e) => onPieceSelect(e)}></div> 
-                <div id="bk" class="piece bk square-40"></div> 
+                <div id="bk" class="piece bk square-40" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bq" class="piece bq square-30" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bp1" class="piece bp square-01" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bp2" class="piece bp square-11" onclick={(e) => onPieceSelect(e)}></div> 
@@ -129,7 +147,7 @@ const Board: Component = () => {
                 <div id="wn2" class="piece wn square-67" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wb1" class="piece wb square-27" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wb2" class="piece wb square-57" onclick={(e) => onPieceSelect(e)}></div> 
-                <div id="wk" class="piece wk square-47"></div> 
+                <div id="wk" class="piece wk square-47" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wq" class="piece wq square-37" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wp1" class="piece wp square-06" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wp2" class="piece wp square-16" onclick={(e) => onPieceSelect(e)}></div> 

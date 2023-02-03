@@ -1,7 +1,8 @@
 import { 
     Square,
     getSquareByClassName,
-    getSquareBasedOnCoordinates
+    getSquareBasedOnCoordinates,
+    Turn
 } from "./squareHelper";
 
 type Coordinate = {
@@ -29,17 +30,17 @@ enum PieceType {
 }
 
 // TODO: calculate king moves
-export function calculateMoves(piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement) {
+export function calculateMoves(piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement, turn: Turn) {
     let validMoves: string[] = [];
 
     const piecesPositionsOnBoard = getAllPiecesOnBoard(piecesPool);
     const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
 
     if (currentPiece === undefined) return [];
-    console.log("current piece",currentPiece);
+
     switch (currentPiece.type) {
         case PieceType.Pawn:
-            validMoves = calculateValidPawnMove(piecesPositionsOnBoard, currentPiece);
+            validMoves = calculateValidPawnMoves(piecesPositionsOnBoard, currentPiece);
             break;
         case PieceType.Rook:
             validMoves = calculateValidRookMoves(piecesPositionsOnBoard, currentPiece);
@@ -53,6 +54,9 @@ export function calculateMoves(piecesPool: HTMLDivElement, selectedPieceHtml: HT
         case PieceType.Queen:
             validMoves = calculateValidQueenMoves(piecesPositionsOnBoard, currentPiece);
             break;
+        case PieceType.King:
+            validMoves = calculateValidKingMoves(piecesPositionsOnBoard, currentPiece);
+            break;
         default:
             console.log("Could not calculate moves for the piece", currentPiece);
             break;
@@ -62,7 +66,7 @@ export function calculateMoves(piecesPool: HTMLDivElement, selectedPieceHtml: HT
 }
 
 // TODO: missing pawn en passant move
-function calculateValidPawnMove(piecesPositionsOnBoard: PieceInfo[], currentPiece: PieceInfo): string[] {
+function calculateValidPawnMoves(piecesPositionsOnBoard: PieceInfo[], currentPiece: PieceInfo): string[] {
     let possibleValidMoves: string[] = [];
 
     let newY;
@@ -286,9 +290,33 @@ function calculateValidQueenMoves(piecesPositionsOnBoard: PieceInfo[], currentPi
     return validMoves;
 }
 
-// TODO: same calculation as for queen but limit each direction to only one square
-function calculateValidKingMoves() {
+function calculateValidKingMoves(piecesPositionsOnBoard: PieceInfo[], currentPiece: PieceInfo): string[] {
+    let validMoves: string[] = [];
 
+    const moves: Coordinate[] = [
+        {x: 0, y: -100},
+        {x: 100, y: -100},
+        {x: 100, y: 0},
+        {x: 100, y: 100},
+        {x: 0, y: 100},
+        {x: -100, y: 100},
+        {x: -100, y: 0},
+        {x: -100, y: -100},
+    ]
+
+    for (let i = 0; i < moves.length; ++i) {
+        const move = moves[i];
+        const square = getSquareBasedOnCoordinates(currentPiece.x + move.x, currentPiece.y + move.y);
+
+        if (square) {
+            const pieceOnSquare = piecesPositionsOnBoard.find((checkPiece) => checkPiece.x == square.x && checkPiece.y == square.y);
+            if (pieceOnSquare?.isWhite != currentPiece.isWhite) {
+                validMoves.push(square.class);
+            }
+        }
+    }
+
+    return validMoves;
 }
 
 function calculateDiagonalOne(piece: PieceInfo, piecesOnBoard: PieceInfo[]): string[] {
@@ -434,5 +462,73 @@ function getPieceTypeFromName(name: string): PieceType {
     if (name.includes("k")) return PieceType.King;
 
     return PieceType.None;
+}
+
+// to check if king is under check
+function getCoverage(piecesPositionsOnBoard: PieceInfo[], currentPiece: PieceInfo) {
+    let validMoves: string[] = [];
+    switch (currentPiece.type) {
+        case PieceType.Pawn:
+            validMoves = calculateValidPawnMoves(piecesPositionsOnBoard, currentPiece);
+            break;
+        case PieceType.Rook:
+            validMoves = calculateValidRookMoves(piecesPositionsOnBoard, currentPiece);
+            break;
+        case PieceType.Knight:
+            validMoves = calculateValidKnightMoves(piecesPositionsOnBoard, currentPiece);
+            break;
+        case PieceType.Bishop:
+            validMoves = calculateValidBishopMoves(piecesPositionsOnBoard, currentPiece);
+            break;
+        case PieceType.Queen:
+            validMoves = calculateValidQueenMoves(piecesPositionsOnBoard, currentPiece);
+            break;
+        case PieceType.King:
+            validMoves = calculateValidKingMoves(piecesPositionsOnBoard, currentPiece);
+            break;
+        default:
+            console.log("Could not calculate moves for the piece", currentPiece);
+            break;
+    }
+
+    return validMoves;
+}
+
+// check before calculating moves for a piece
+//
+// simulate a move and check if my king is sudenly under check
+// if so then it is not a valid move and should not be allowed
+function isDiscoveredCheck(): boolean {
+    return false;
+}
+
+function isKingUnderCheck(piecesPositionsOnBoard: PieceInfo[], turn: Turn): boolean {
+    //TODO: how tf am I going to do that
+
+
+    // get all opponenst pieces valid moves and see if they contain a square where king is
+    // also need to detect whose turn is currently is
+    
+    if (turn == Turn.White) {
+        //check if white king is under check
+        // get all black pieces valid moves
+        // get white king current location
+        const blackPieces = piecesPositionsOnBoard.filter((piece) => piece.isWhite === false);
+
+        let blackPiecesCoverage: string[] = [];
+        for (let i = 0; i < blackPieces.length; ++i) {
+            const piece = blackPieces[i];
+            blackPiecesCoverage.push(...getCoverage(piecesPositionsOnBoard, piece));
+        }
+
+        console.log(blackPiecesCoverage);
+    
+
+    } else {
+        //check if black king is under check
+    }
+
+
+    return false;
 }
 
