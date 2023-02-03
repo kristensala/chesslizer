@@ -36,7 +36,7 @@ export function calculateMoves(piecesPool: HTMLDivElement, selectedPieceHtml: HT
     const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
 
     if (currentPiece === undefined) return [];
-
+    console.log("current piece",currentPiece);
     switch (currentPiece.type) {
         case PieceType.Pawn:
             validMoves = calculateValidPawnMove(piecesPositionsOnBoard, currentPiece);
@@ -167,6 +167,7 @@ function calculateValidMovesAcrossFile(piece: PieceInfo, board: PieceInfo[]): st
             validMoves.push(validSquare.class);
         }
     }
+    console.log("queen test", validMoves);
     return validMoves;
 }
 
@@ -428,7 +429,7 @@ function getPieceTypeFromName(name: string): PieceType {
     if (name.includes("p")) return PieceType.Pawn;
     if (name.includes("r")) return PieceType.Rook;
     if (name.includes("n")) return PieceType.Knight;
-    if (name.includes("b")) return PieceType.Bishop;
+    if (name.includes("bb") || name.includes("wb")) return PieceType.Bishop;
     if (name.includes("q")) return PieceType.Queen;
     if (name.includes("k")) return PieceType.King;
 
