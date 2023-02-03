@@ -52,6 +52,7 @@ const Board: Component = () => {
 
         for (let i = 0; i < newPositions.length; ++i) {
             const activeSquare = document.createElement("div");
+            activeSquare.appendChild(document.createElement("span"));
             activeSquare.setAttribute("id", newPositions[i]);
             activeSquare.addEventListener("click", () => {
                 movePiece(piece, newPositions[i]);
