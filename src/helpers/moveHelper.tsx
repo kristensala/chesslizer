@@ -245,84 +245,50 @@ export function calculateValidBishopMoves(piecesPoolHtml: HTMLDivElement, select
         return [];
     }
 
-    const currentPieceX = currentPiece.x;
-    const currentPieceY = currentPiece.y;
-
     // diagonal1 '\'
-    let y = currentPieceY + 100;
-    let x = currentPieceX;
-    for (y; y <= 700; y += 100) {
-        x += 100;
-
-        if (x <= 700) {
-            const square = getSquareBasedOnCoordinates(x, y);
-            if (square === undefined) return [];
-
-            const pieceOnSquare = getPieceOnSquare(square, piecesPositionsOnBoard);
-            if (pieceOnSquare) {
-                if (pieceOnSquare.isWhite != currentPiece.isWhite) {
-                    validMoves.push(square.class);
-                }
-                break;
-            }
-
-            validMoves.push(square.class);
-        }
-    }
-
-    y = currentPieceY - 100;
-    x = currentPieceX;
-    for (y; y >= 0; y -= 100) {
-        x -= 100;
-
-        if (x >= 0) {
-            const square = getSquareBasedOnCoordinates(x, y);
-            if (square === undefined) return [];
-
-            const pieceOnSquare = getPieceOnSquare(square, piecesPositionsOnBoard);
-            if (pieceOnSquare) {
-                if (pieceOnSquare.isWhite != currentPiece.isWhite) {
-                    validMoves.push(square.class);
-                }
-                break;
-            }
-            validMoves.push(square.class);
-        }
-    }
+    validMoves.push(...calculateDiagonalOne(currentPiece, piecesPositionsOnBoard));
 
     // diagonal 2 '/'
-    y = currentPieceY + 100;
-    x = currentPieceX;
+    validMoves.push(...calculateDiagonalTwo(currentPiece, piecesPositionsOnBoard));
+
+    return validMoves;
+}
+
+function calculateDiagonalOne(piece: Piece, piecesOnBoard: Piece[]): string[] {
+    let validMoves: string[] = [];
+    let y = piece.y + 100;
+    let x = piece.x;
     for (y; y <= 700; y += 100) {
-        x -= 100;
-
-        if (x >= 0) {
-            const square = getSquareBasedOnCoordinates(x, y);
-            if (square === undefined) return [];
-
-            const pieceOnSquare = getPieceOnSquare(square, piecesPositionsOnBoard);
-            if (pieceOnSquare) {
-                if (pieceOnSquare.isWhite != currentPiece.isWhite) {
-                    validMoves.push(square.class);
-                }
-                break;
-            }
-            validMoves.push(square.class);
-        }
-    }
-
-    y = currentPieceY - 100;
-    x = currentPieceX;
-    for (y; y >= 0; y -= 100) {
         x += 100;
 
         if (x <= 700) {
             const square = getSquareBasedOnCoordinates(x, y);
             if (square === undefined) return [];
 
-            const pieceOnSquare = getPieceOnSquare(square, piecesPositionsOnBoard);
+            const pieceOnSquare = getPieceOnSquare(square, piecesOnBoard);
             if (pieceOnSquare) {
-                if (pieceOnSquare.isWhite != currentPiece.isWhite) {
+                if (pieceOnSquare.isWhite != piece.isWhite) {
+                    validMoves.push(square.class);
+                }
+                break;
+            }
+
+            validMoves.push(square.class);
+        }
+    }
+
+    y = piece.y - 100;
+    x = piece.x;
+    for (y; y >= 0; y -= 100) {
+        x -= 100;
+
+        if (x >= 0) {
+            const square = getSquareBasedOnCoordinates(x, y);
+            if (square === undefined) return [];
+
+            const pieceOnSquare = getPieceOnSquare(square, piecesOnBoard);
+            if (pieceOnSquare) {
+                if (pieceOnSquare.isWhite != piece.isWhite) {
                     validMoves.push(square.class);
                 }
                 break;
@@ -332,6 +298,57 @@ export function calculateValidBishopMoves(piecesPoolHtml: HTMLDivElement, select
     }
 
     return validMoves;
+}
+
+function calculateDiagonalTwo(piece: Piece, piecesOnBoard: Piece[]): string[] {
+    let validMoves: string[] = [];
+
+    let y = piece.y + 100;
+    let x = piece.x;
+    for (y; y <= 700; y += 100) {
+        x -= 100;
+
+        if (x >= 0) {
+            const square = getSquareBasedOnCoordinates(x, y);
+            if (square === undefined) return [];
+
+            const pieceOnSquare = getPieceOnSquare(square, piecesOnBoard);
+            if (pieceOnSquare) {
+                if (pieceOnSquare.isWhite != piece.isWhite) {
+                    validMoves.push(square.class);
+                }
+                break;
+            }
+            validMoves.push(square.class);
+        }
+    }
+
+    y = piece.y - 100;
+    x = piece.x;
+    for (y; y >= 0; y -= 100) {
+        x += 100;
+
+        if (x <= 700) {
+            const square = getSquareBasedOnCoordinates(x, y);
+            if (square === undefined) return [];
+
+            const pieceOnSquare = getPieceOnSquare(square, piecesOnBoard);
+            if (pieceOnSquare) {
+                if (pieceOnSquare.isWhite != piece.isWhite) {
+                    validMoves.push(square.class);
+                }
+                break;
+            }
+            validMoves.push(square.class);
+        }
+    }
+
+    return validMoves;
+}
+
+// TODO: should reuse rook and bishop moves calculations
+export function calculateValidQueenMoves() {
+
 }
 
 function getPieceOnSquare(square: Square | undefined, piecesOnBoard: Piece[]): Piece | undefined {
