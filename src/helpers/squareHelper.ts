@@ -23,7 +23,7 @@ export function getSquareBasedOnCoordinates(x: number, y: number): Square | unde
     return newSquare
 }
 
-export const WhitePOVSquares: Square[] = [
+const WhitePOVSquares: Square[] = [
     { name: "a1", class: "square-07", x: 0, y: 700 },
     { name: "b1", class: "square-17", x: 100, y: 700 },
     { name: "c1", class: "square-27", x: 200, y: 700 },

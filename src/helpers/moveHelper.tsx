@@ -1,6 +1,5 @@
 import { 
     Square,
-    WhitePOVSquares,
     getSquareByClassName,
     getSquareBasedOnCoordinates
 } from "./squareHelper";
@@ -10,65 +9,105 @@ type Coordinate = {
     y: number
 }
 
-type Piece = {
+type PieceInfo = {
     isWhite: boolean, // true
     name: string, //br
+    type: PieceType,
     position: string, //square-72
     x: number, // 700
     y: number // 200
 }
 
-// TODO: pawn en passant move
-export function calculateValidPawnMove(piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] {
+enum PieceType {
+    None = "None",
+    Pawn = "Pawn",
+    Rook = "Rook",
+    Knight = "Knight",
+    Bishop = "Bishop",
+    Queen = "Queen",
+    King = "King"
+}
+
+// TODO: calculate king moves
+export function calculateMoves(piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement) {
+    let validMoves: string[] = [];
+
     const piecesPositionsOnBoard = getAllPiecesOnBoard(piecesPool);
     const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
 
+    if (currentPiece === undefined) return [];
+
+    switch (currentPiece.type) {
+        case PieceType.Pawn:
+            validMoves = calculateValidPawnMove(piecesPositionsOnBoard, currentPiece);
+            break;
+        case PieceType.Rook:
+            validMoves = calculateValidRookMoves(piecesPositionsOnBoard, currentPiece);
+            break;
+        case PieceType.Knight:
+            validMoves = calculateValidKnightMoves(piecesPositionsOnBoard, currentPiece);
+            break;
+        case PieceType.Bishop:
+            validMoves = calculateValidBishopMoves(piecesPositionsOnBoard, currentPiece);
+            break;
+        case PieceType.Queen:
+            validMoves = calculateValidQueenMoves(piecesPositionsOnBoard, currentPiece);
+            break;
+        default:
+            console.log("Could not calculate moves for the piece", currentPiece);
+            break;
+    }
+
+    return validMoves;
+}
+
+// TODO: missing pawn en passant move
+function calculateValidPawnMove(piecesPositionsOnBoard: PieceInfo[], currentPiece: PieceInfo): string[] {
     let possibleValidMoves: string[] = [];
-    if (currentPiece !== undefined) {
-        let newY;
-        if (currentPiece?.isWhite) {
-            newY = currentPiece.y - 100;
-        } else {
-            newY = currentPiece.y + 100;
+
+    let newY;
+    if (currentPiece?.isWhite) {
+        newY = currentPiece.y - 100;
+    } else {
+        newY = currentPiece.y + 100;
+    }
+
+    let newX = currentPiece.x;
+    const frontSquare = getSquareBasedOnCoordinates(newX, newY);
+
+    newX = currentPiece.x - 100;
+    const takeLeftSquare = getSquareBasedOnCoordinates(newX, newY);
+
+    newX = currentPiece.x + 100;
+    const takeRightSquare = getSquareBasedOnCoordinates(newX, newY);
+
+    if (frontSquare !== undefined) {
+        if (!piecesPositionsOnBoard.find((piece) => piece.position == frontSquare.class)) {
+            possibleValidMoves.push(frontSquare.class);
         }
+    }
 
-        let newX = currentPiece.x;
-        const frontSquare = getSquareBasedOnCoordinates(newX, newY);
-
-        newX = currentPiece.x - 100;
-        const takeLeftSquare = getSquareBasedOnCoordinates(newX, newY);
-
-        newX = currentPiece.x + 100;
-        const takeRightSquare = getSquareBasedOnCoordinates(newX, newY);
-
-        if (frontSquare !== undefined) {
-            if (!piecesPositionsOnBoard.find((piece) => piece.position == frontSquare.class)) {
-                possibleValidMoves.push(frontSquare.class);
+    if (takeLeftSquare !== undefined) {
+        const toTakePiece = piecesPositionsOnBoard.find((piece) => {
+            if (piece.position == takeLeftSquare.class) {
+                return piece;
             }
+        });
+
+        if (toTakePiece !== undefined && isOpponentsPiece(currentPiece, toTakePiece)) {
+            possibleValidMoves.push(takeLeftSquare.class);
         }
+    }
 
-        if (takeLeftSquare !== undefined) {
-            const toTakePiece = piecesPositionsOnBoard.find((piece) => {
-                if (piece.position == takeLeftSquare.class) {
-                    return piece;
-                }
-            });
-
-            if (toTakePiece !== undefined && canTake(currentPiece, toTakePiece)) {
-                possibleValidMoves.push(takeLeftSquare.class);
+    if (takeRightSquare !== undefined) {
+        const toTakePiece = piecesPositionsOnBoard.find((piece) => {
+            if (piece.position == takeRightSquare.class) {
+                return piece;
             }
-        }
+        });
 
-        if (takeRightSquare !== undefined) {
-            const toTakePiece = piecesPositionsOnBoard.find((piece) => {
-                if (piece.position == takeRightSquare.class) {
-                    return piece;
-                }
-            });
-
-            if (toTakePiece !== undefined && canTake(currentPiece, toTakePiece)) {
-                possibleValidMoves.push(takeRightSquare.class);
-            }
+        if (toTakePiece !== undefined && isOpponentsPiece(currentPiece, toTakePiece)) {
+            possibleValidMoves.push(takeRightSquare.class);
         }
     }
 
@@ -76,12 +115,7 @@ export function calculateValidPawnMove(piecesPool: HTMLDivElement, selectedPiece
     return possibleValidMoves;
 }
 
-export function calculateValidRookMoves(piecesPool: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] {
-    const piecesPositionsOnBoard = getAllPiecesOnBoard(piecesPool);
-    const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
-
-    if (currentPiece === undefined) return [];
-
+function calculateValidRookMoves(piecesPositionsOnBoard: PieceInfo[], currentPiece: PieceInfo): string[] {
     let fileMoves = calculateValidMovesAcrossFile(currentPiece, piecesPositionsOnBoard);
     let rowMoves = calculateValidMovesAcrossRow(currentPiece, piecesPositionsOnBoard);
 
@@ -89,7 +123,7 @@ export function calculateValidRookMoves(piecesPool: HTMLDivElement, selectedPiec
     return result;
 }
 
-function calculateValidMovesAcrossFile(piece: Piece, board: Piece[]): string[] {
+function calculateValidMovesAcrossFile(piece: PieceInfo, board: PieceInfo[]): string[] {
     let validMoves: string[] = [];
 
     const otherPiecesOnSameFile = board.filter((otherPiece) => otherPiece.x == piece.x && otherPiece.y != piece.y);
@@ -102,7 +136,7 @@ function calculateValidMovesAcrossFile(piece: Piece, board: Piece[]): string[] {
         const validSquare = getSquareBasedOnCoordinates(currentPieceX, indexToNorth);
 
         if (foundPiece) {
-            if (canTake(piece, foundPiece)) {
+            if (isOpponentsPiece(piece, foundPiece)) {
                 if (validSquare !== undefined) { 
                     validMoves.push(validSquare.class);
                 }
@@ -121,7 +155,7 @@ function calculateValidMovesAcrossFile(piece: Piece, board: Piece[]): string[] {
         const validSquare = getSquareBasedOnCoordinates(currentPieceX, indexToSouth);
 
         if (foundPiece) {
-            if (canTake(piece, foundPiece)) {
+            if (isOpponentsPiece(piece, foundPiece)) {
                 if (validSquare !== undefined) { 
                     validMoves.push(validSquare.class);
                 }
@@ -136,7 +170,7 @@ function calculateValidMovesAcrossFile(piece: Piece, board: Piece[]): string[] {
     return validMoves;
 }
 
-function calculateValidMovesAcrossRow(piece: Piece, board: Piece[]): string[] {
+function calculateValidMovesAcrossRow(piece: PieceInfo, board: PieceInfo[]): string[] {
     let validMoves: string[] = [];
 
     const otherPiecesOnSameRow = board.filter((otherPiece) => otherPiece.y == piece.y && otherPiece.x != piece.x);
@@ -149,7 +183,7 @@ function calculateValidMovesAcrossRow(piece: Piece, board: Piece[]): string[] {
         const validSquare = getSquareBasedOnCoordinates(indexToRight, currentPieceY);
 
         if (foundPiece) {
-            if (canTake(piece, foundPiece)) {
+            if (isOpponentsPiece(piece, foundPiece)) {
                 if (validSquare !== undefined) { 
                     validMoves.push(validSquare.class);
                 }
@@ -166,7 +200,7 @@ function calculateValidMovesAcrossRow(piece: Piece, board: Piece[]): string[] {
     for (indexToLeft; indexToLeft >= 0; indexToLeft -= 100) {
         const foundPiece = otherPiecesOnSameRow.find((piece) => piece.x == indexToLeft);
         if (foundPiece) {
-            if (canTake(piece, foundPiece)) {
+            if (isOpponentsPiece(piece, foundPiece)) {
                 const validSquare = getSquareBasedOnCoordinates(indexToLeft, currentPieceY);
                 if (validSquare !== undefined) {
                     validMoves.push(validSquare?.class);
@@ -184,7 +218,7 @@ function calculateValidMovesAcrossRow(piece: Piece, board: Piece[]): string[] {
     return validMoves;
 }
 
-export function calculateValidKnightMoves(piecesPoolHtml: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] {
+function calculateValidKnightMoves(piecesPositionsOnBoard: PieceInfo[], currentPiece: PieceInfo): string[] {
     // moves 8 is there a pattern??
     // y - 200 x - 100
     // y - 200 x + 100
@@ -195,14 +229,6 @@ export function calculateValidKnightMoves(piecesPoolHtml: HTMLDivElement, select
     // y + 100 x - 200
     // y - 100 x - 200
     let validMoves: string[] = [];
-
-    const piecesPositionsOnBoard: Piece[] = getAllPiecesOnBoard(piecesPoolHtml);
-    const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
-
-    if (currentPiece == undefined) {
-        return [];
-    }
-
     const currentPieceX = currentPiece.x;
     const currentPieceY = currentPiece.y;
 
@@ -232,18 +258,12 @@ export function calculateValidKnightMoves(piecesPoolHtml: HTMLDivElement, select
     return validMoves;
 }
 
-export function calculateValidBishopMoves(piecesPoolHtml: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] {
+function calculateValidBishopMoves(piecesPositionsOnBoard: PieceInfo[], currentPiece: PieceInfo): string[] {
     let validMoves: string[] = [];
    
     // moves til board end or detect piece 0 -> 700
     // x - 100 y - 100 x + 100 y + 100 \
     // x + 100 y - 100  x - 100 y + 100 /
-    const piecesPositionsOnBoard: Piece[] = getAllPiecesOnBoard(piecesPoolHtml);
-    const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
-
-    if (currentPiece == undefined) {
-        return [];
-    }
 
     // diagonal1 '\'
     validMoves.push(...calculateDiagonalOne(currentPiece, piecesPositionsOnBoard));
@@ -254,15 +274,8 @@ export function calculateValidBishopMoves(piecesPoolHtml: HTMLDivElement, select
     return validMoves;
 }
 
-export function calculateValidQueenMoves(piecesPoolHtml: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] {
+function calculateValidQueenMoves(piecesPositionsOnBoard: PieceInfo[], currentPiece: PieceInfo): string[] {
     let validMoves: string[] = []
-
-    const piecesPositionsOnBoard: Piece[] = getAllPiecesOnBoard(piecesPoolHtml);
-    const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
-
-    if (currentPiece == undefined) {
-        return [];
-    }
 
     validMoves.push(...calculateValidMovesAcrossRow(currentPiece, piecesPositionsOnBoard));
     validMoves.push(...calculateValidMovesAcrossFile(currentPiece, piecesPositionsOnBoard));
@@ -272,7 +285,12 @@ export function calculateValidQueenMoves(piecesPoolHtml: HTMLDivElement, selecte
     return validMoves;
 }
 
-function calculateDiagonalOne(piece: Piece, piecesOnBoard: Piece[]): string[] {
+// TODO: same calculation as for queen but limit each direction to only one square
+function calculateValidKingMoves() {
+
+}
+
+function calculateDiagonalOne(piece: PieceInfo, piecesOnBoard: PieceInfo[]): string[] {
     let validMoves: string[] = [];
     let y = piece.y + 100;
     let x = piece.x;
@@ -318,7 +336,7 @@ function calculateDiagonalOne(piece: Piece, piecesOnBoard: Piece[]): string[] {
     return validMoves;
 }
 
-function calculateDiagonalTwo(piece: Piece, piecesOnBoard: Piece[]): string[] {
+function calculateDiagonalTwo(piece: PieceInfo, piecesOnBoard: PieceInfo[]): string[] {
     let validMoves: string[] = [];
 
     let y = piece.y + 100;
@@ -365,32 +383,24 @@ function calculateDiagonalTwo(piece: Piece, piecesOnBoard: Piece[]): string[] {
 }
 
 
-function getPieceOnSquare(square: Square | undefined, piecesOnBoard: Piece[]): Piece | undefined {
+function getPieceOnSquare(square: Square | undefined, piecesOnBoard: PieceInfo[]): PieceInfo | undefined {
     if (square) {
         const pieceOnSquare = piecesOnBoard.find((checkPiece) => checkPiece.x == square.x && checkPiece.y == square.y);
         return pieceOnSquare;
     }
 }
 
-function getPiece(pieceHtml: HTMLDivElement, piecesPositionsOnBoard: Piece[]): Piece | undefined {
+function getPiece(pieceHtml: HTMLDivElement, piecesPositionsOnBoard: PieceInfo[]): PieceInfo | undefined {
     const pieceClass = pieceHtml.classList[2];
     return piecesPositionsOnBoard.find((piece) => piece.position == pieceClass);
 }
 
-function canTake(selectedPiece: Piece, toTakePiece: Piece): boolean {
-    return isWhitePieceByName(selectedPiece.name) != isWhitePieceByName(toTakePiece.name);
+function isOpponentsPiece(selectedPiece: PieceInfo, toTakePiece: PieceInfo): boolean {
+    return selectedPiece.isWhite !== toTakePiece.isWhite;
 }
 
-function isWhitePieceByName(name: string): boolean {
-    if (name.startsWith("b")) {
-        return false;
-    }
-
-    return true;
-}
-
-function getAllPiecesOnBoard(piecesPool: HTMLDivElement): Piece[] {
-    let result: Piece[] = []
+function getAllPiecesOnBoard(piecesPool: HTMLDivElement): PieceInfo[] {
+    let result: PieceInfo[] = []
     const pieces = piecesPool.childNodes;
     for (let i = 0; i < pieces.length; ++i) {
         const piece = pieces[i] as HTMLDivElement;
@@ -398,10 +408,12 @@ function getAllPiecesOnBoard(piecesPool: HTMLDivElement): Piece[] {
         const square = getSquareByClassName(positionString);
 
         if (square === undefined) throw "No square found";
-
-        const newPiece: Piece = {
-            isWhite: piece.classList[1].startsWith("w"),
-            name: piece.classList[1], //br
+        
+        const name = piece.classList[1];
+        const newPiece: PieceInfo = {
+            isWhite: name.startsWith("w"),
+            name: name, //br
+            type: getPieceTypeFromName(name),
             position: piece.classList[2],
             x: square.x,
             y: square.y
@@ -410,5 +422,16 @@ function getAllPiecesOnBoard(piecesPool: HTMLDivElement): Piece[] {
     }
 
     return result;
+}
+
+function getPieceTypeFromName(name: string): PieceType {
+    if (name.includes("p")) return PieceType.Pawn;
+    if (name.includes("r")) return PieceType.Rook;
+    if (name.includes("n")) return PieceType.Knight;
+    if (name.includes("b")) return PieceType.Bishop;
+    if (name.includes("q")) return PieceType.Queen;
+    if (name.includes("k")) return PieceType.King;
+
+    return PieceType.None;
 }
 

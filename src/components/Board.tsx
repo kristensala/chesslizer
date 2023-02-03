@@ -1,31 +1,8 @@
-import { Component, createSignal } from "solid-js";
+import { Component } from "solid-js";
 import "../css/board.css";
-import { calculateValidBishopMoves, calculateValidKnightMoves, calculateValidPawnMove, calculateValidQueenMoves, calculateValidRookMoves } from "../helpers/moveHelper";
-import { PointOfView, Square, WhitePOVSquares, BlackPOVSquares } from "../helpers/squareHelper";
+import { calculateMoves } from "../helpers/moveHelper";
 
 const Board: Component = () => {
-    const [forceRules, setForceRules] = createSignal(true);
-    const [pointOfView, setPointOfView] = createSignal(PointOfView.White);
-    const [squares, setSquares] = createSignal(WhitePOVSquares);
-
-    const flipBoard = () => {
-        if (pointOfView() === PointOfView.White) {
-            setPointOfView(PointOfView.Black);
-            setSquares(BlackPOVSquares);
-            // todo: also move pieces
-        }
-
-        if (pointOfView() === PointOfView.Black) {
-            setPointOfView(PointOfView.White);
-            setSquares(WhitePOVSquares);
-            // todo: also move pieces
-        }
-    }
-
-    const movePiecesOnBoardFlip = (pov: PointOfView) => {
-
-    }
-
     // TODO: remove activity from other pieces not just the target
     const onPieceSelect = (piece: MouseEvent): void => {
         const piecesPool = document.getElementById("pieces-pool") as HTMLDivElement;
@@ -56,28 +33,7 @@ const Board: Component = () => {
         let piecesPool = document.getElementById("pieces-pool") as HTMLDivElement;
         let activeSquarePool = document.getElementById("active-square-pool");
 
-        let validSquares: string[] = [];
-        const id = piece.id;
-        // todo: a better way to detect what type of piece is selected
-        if (id.startsWith("wp") || id.startsWith("bp")) {
-            validSquares = calculateValidPawnMove(piecesPool, piece);
-        }
-
-        if (id.startsWith("wr") || id.startsWith("br")) {
-            validSquares = calculateValidRookMoves(piecesPool, piece);
-        }
-
-        if (id.startsWith("wn") || id.startsWith("bn")) {
-            validSquares = calculateValidKnightMoves(piecesPool, piece);
-        }
-
-        if (id.startsWith("wb") || id.startsWith("bb")) {
-            validSquares = calculateValidBishopMoves(piecesPool, piece);
-        }
-
-        if (id.startsWith("wq") || id.startsWith("bq")) {
-            validSquares = calculateValidQueenMoves(piecesPool, piece);
-        }
+        let validSquares: string[] = calculateMoves(piecesPool, piece);
 
         createActiveSquares(activeSquarePool, validSquares, piece);
     }
