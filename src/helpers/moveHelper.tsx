@@ -184,7 +184,7 @@ function getValidRookMovesOnRow(piece: Piece, board: Piece[]): string[] {
     return validMoves;
 }
 
-export function calculateValidKnightMoves(piecesPoolHtml: HTMLDivElement, selectedPieceHtml: HTMLDivElement) {
+export function calculateValidKnightMoves(piecesPoolHtml: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] {
     // moves 8 is there a pattern??
     // y - 200 x - 100
     // y - 200 x + 100
@@ -196,7 +196,7 @@ export function calculateValidKnightMoves(piecesPoolHtml: HTMLDivElement, select
     // y - 100 x - 200
     let validMoves: string[] = [];
 
-    const piecesPositionsOnBoard = getAllPiecesOnBoard(piecesPoolHtml);
+    const piecesPositionsOnBoard: Piece[] = getAllPiecesOnBoard(piecesPoolHtml);
     const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
 
     if (currentPiece == undefined) {
@@ -230,6 +230,115 @@ export function calculateValidKnightMoves(piecesPoolHtml: HTMLDivElement, select
     }
 
     return validMoves;
+}
+
+export function calculateValidBishopMoves(piecesPoolHtml: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] {
+    let validMoves: string[] = [];
+   
+    // moves til board end or detect piece 0 -> 700
+    // x - 100 y - 100 x + 100 y + 100 \
+    // x + 100 y - 100  x - 100 y + 100 /
+    const piecesPositionsOnBoard: Piece[] = getAllPiecesOnBoard(piecesPoolHtml);
+    const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
+
+    if (currentPiece == undefined) {
+        return [];
+    }
+
+    const currentPieceX = currentPiece.x;
+    const currentPieceY = currentPiece.y;
+
+    // diagonal1 '\'
+    let y = currentPieceY + 100;
+    let x = currentPieceX;
+    for (y; y <= 700; y += 100) {
+        x += 100;
+
+        if (x <= 700) {
+            const square = getSquareBasedOnCoordinates(x, y);
+            if (square === undefined) return [];
+
+            const pieceOnSquare = getPieceOnSquare(square, piecesPositionsOnBoard);
+            if (pieceOnSquare) {
+                if (pieceOnSquare.isWhite != currentPiece.isWhite) {
+                    validMoves.push(square.class);
+                }
+                break;
+            }
+
+            validMoves.push(square.class);
+        }
+    }
+
+    y = currentPieceY - 100;
+    x = currentPieceX;
+    for (y; y >= 0; y -= 100) {
+        x -= 100;
+
+        if (x >= 0) {
+            const square = getSquareBasedOnCoordinates(x, y);
+            if (square === undefined) return [];
+
+            const pieceOnSquare = getPieceOnSquare(square, piecesPositionsOnBoard);
+            if (pieceOnSquare) {
+                if (pieceOnSquare.isWhite != currentPiece.isWhite) {
+                    validMoves.push(square.class);
+                }
+                break;
+            }
+            validMoves.push(square.class);
+        }
+    }
+
+    // diagonal 2 '/'
+    y = currentPieceY + 100;
+    x = currentPieceX;
+    for (y; y <= 700; y += 100) {
+        x -= 100;
+
+        if (x >= 0) {
+            const square = getSquareBasedOnCoordinates(x, y);
+            if (square === undefined) return [];
+
+            const pieceOnSquare = getPieceOnSquare(square, piecesPositionsOnBoard);
+            if (pieceOnSquare) {
+                if (pieceOnSquare.isWhite != currentPiece.isWhite) {
+                    validMoves.push(square.class);
+                }
+                break;
+            }
+            validMoves.push(square.class);
+        }
+    }
+
+    y = currentPieceY - 100;
+    x = currentPieceX;
+    for (y; y >= 0; y -= 100) {
+        x += 100;
+
+        if (x <= 700) {
+            const square = getSquareBasedOnCoordinates(x, y);
+            if (square === undefined) return [];
+
+            const pieceOnSquare = getPieceOnSquare(square, piecesPositionsOnBoard);
+            if (pieceOnSquare) {
+                if (pieceOnSquare.isWhite != currentPiece.isWhite) {
+                    validMoves.push(square.class);
+                }
+                break;
+            }
+            validMoves.push(square.class);
+        }
+    }
+
+    return validMoves;
+}
+
+function getPieceOnSquare(square: Square | undefined, piecesOnBoard: Piece[]): Piece | undefined {
+    if (square) {
+        const pieceOnSquare = piecesOnBoard.find((checkPiece) => checkPiece.x == square.x && checkPiece.y == square.y);
+        return pieceOnSquare;
+    }
 }
 
 function getPiece(pieceHtml: HTMLDivElement, piecesPositionsOnBoard: Piece[]): Piece | undefined {
