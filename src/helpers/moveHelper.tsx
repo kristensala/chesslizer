@@ -2,8 +2,12 @@ import {
     Square,
     getSquareByClassName,
     getSquareBasedOnCoordinates,
-    Turn
 } from "./squareHelper";
+
+export enum Turn {
+    White,
+    Black
+}
 
 type Coordinate = {
     x: number,

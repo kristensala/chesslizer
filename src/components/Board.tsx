@@ -1,16 +1,13 @@
-import { Component, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import "../css/board.css";
-import { calculateMoves } from "../helpers/moveHelper";
-import { Turn } from "../helpers/squareHelper";
+import { calculateMoves, Turn } from "../helpers/moveHelper";
 
-const Board: Component = () => {
+function Board() {
     const [turn, setTurn] = createSignal(Turn.White);
     const [canKingSideCastle, setCanKingSideCastle] = createSignal(true);
     const [canQueenSideCastle, setCanQueenSideCastle] = createSignal(true);
 
-
-    // TODO: remove activity from other pieces not just the target
-    const onPieceSelect = (piece: MouseEvent): void => {
+    function onPieceSelect(piece: MouseEvent): void {
         const piecesPool = document.getElementById("pieces-pool") as HTMLDivElement;
         const pieces = piecesPool.childNodes;
         const target = piece.target as HTMLDivElement;
@@ -38,7 +35,7 @@ const Board: Component = () => {
         }
     }
 
-    const addValidToMoveSquares = (piece: HTMLDivElement) => {
+    function addValidToMoveSquares(piece: HTMLDivElement): void {
         let piecesPool = document.getElementById("pieces-pool") as HTMLDivElement;
         let activeSquarePool = document.getElementById("active-square-pool");
 
@@ -47,7 +44,7 @@ const Board: Component = () => {
         createActiveSquares(activeSquarePool, validSquares, piece);
     }
 
-    const createActiveSquares = (pool: HTMLElement | null, newPositions: string[], piece: HTMLElement) => {
+    function createActiveSquares(pool: HTMLElement | null, newPositions: string[], piece: HTMLElement): void {
         clearActiveSquarePool();
 
         for (let i = 0; i < newPositions.length; ++i) {
@@ -63,14 +60,14 @@ const Board: Component = () => {
         }
     }
 
-    const getCurrentPiecePosition = (piece: HTMLElement) => {
+    function getCurrentPiecePosition(piece: HTMLElement): string | undefined {
         const classList = piece.classList;
         if (classList !== undefined) {
             return classList[2];
         }
     }
 
-    const movePiece = (piece: HTMLElement, newPosition: string): void => {
+    function movePiece(piece: HTMLElement, newPosition: string): void {
         const piecesPool = document.getElementById("pieces-pool") as HTMLDivElement;
         const currentPos = getCurrentPiecePosition(piece);
 
@@ -93,7 +90,8 @@ const Board: Component = () => {
         clearActiveSquarePool();
     }
 
-    const takePiece = (piecesPool: HTMLDivElement, newPosition: string) => {
+    // This assumes that calculated moves are correct
+    function takePiece(piecesPool: HTMLDivElement, newPosition: string): void {
         let allPieces = piecesPool.childNodes;
         
         for (let i = 0; i < allPieces.length; ++i) {
@@ -107,7 +105,7 @@ const Board: Component = () => {
         }
     }
 
-    const clearActiveSquarePool = () => {
+    function clearActiveSquarePool(): void {
         const pool = document.getElementById("active-square-pool");
         const children = pool?.childNodes;
 
