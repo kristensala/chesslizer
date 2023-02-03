@@ -82,14 +82,14 @@ export function calculateValidRookMoves(piecesPool: HTMLDivElement, selectedPiec
 
     if (currentPiece === undefined) return [];
 
-    let fileMoves = getValidRookMovesOnFile(currentPiece, piecesPositionsOnBoard);
-    let rowMoves = getValidRookMovesOnRow(currentPiece, piecesPositionsOnBoard);
+    let fileMoves = calculateValidMovesAcrossFile(currentPiece, piecesPositionsOnBoard);
+    let rowMoves = calculateValidMovesAcrossRow(currentPiece, piecesPositionsOnBoard);
 
     const result = fileMoves.concat(rowMoves);
     return result;
 }
 
-function getValidRookMovesOnFile(piece: Piece, board: Piece[]): string[] {
+function calculateValidMovesAcrossFile(piece: Piece, board: Piece[]): string[] {
     let validMoves: string[] = [];
 
     const otherPiecesOnSameFile = board.filter((otherPiece) => otherPiece.x == piece.x && otherPiece.y != piece.y);
@@ -136,7 +136,7 @@ function getValidRookMovesOnFile(piece: Piece, board: Piece[]): string[] {
     return validMoves;
 }
 
-function getValidRookMovesOnRow(piece: Piece, board: Piece[]): string[] {
+function calculateValidMovesAcrossRow(piece: Piece, board: Piece[]): string[] {
     let validMoves: string[] = [];
 
     const otherPiecesOnSameRow = board.filter((otherPiece) => otherPiece.y == piece.y && otherPiece.x != piece.x);
@@ -254,6 +254,24 @@ export function calculateValidBishopMoves(piecesPoolHtml: HTMLDivElement, select
     return validMoves;
 }
 
+export function calculateValidQueenMoves(piecesPoolHtml: HTMLDivElement, selectedPieceHtml: HTMLDivElement): string[] {
+    let validMoves: string[] = []
+
+    const piecesPositionsOnBoard: Piece[] = getAllPiecesOnBoard(piecesPoolHtml);
+    const currentPiece = getPiece(selectedPieceHtml, piecesPositionsOnBoard);
+
+    if (currentPiece == undefined) {
+        return [];
+    }
+
+    validMoves.push(...calculateValidMovesAcrossRow(currentPiece, piecesPositionsOnBoard));
+    validMoves.push(...calculateValidMovesAcrossFile(currentPiece, piecesPositionsOnBoard));
+    validMoves.push(...calculateDiagonalOne(currentPiece, piecesPositionsOnBoard));
+    validMoves.push(...calculateDiagonalTwo(currentPiece, piecesPositionsOnBoard));
+
+    return validMoves;
+}
+
 function calculateDiagonalOne(piece: Piece, piecesOnBoard: Piece[]): string[] {
     let validMoves: string[] = [];
     let y = piece.y + 100;
@@ -346,10 +364,6 @@ function calculateDiagonalTwo(piece: Piece, piecesOnBoard: Piece[]): string[] {
     return validMoves;
 }
 
-// TODO: should reuse rook and bishop moves calculations
-export function calculateValidQueenMoves() {
-
-}
 
 function getPieceOnSquare(square: Square | undefined, piecesOnBoard: Piece[]): Piece | undefined {
     if (square) {

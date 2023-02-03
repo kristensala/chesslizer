@@ -1,6 +1,6 @@
 import { Component, createSignal } from "solid-js";
 import "../css/board.css";
-import { calculateValidBishopMoves, calculateValidKnightMoves, calculateValidPawnMove, calculateValidRookMoves } from "../helpers/moveHelper";
+import { calculateValidBishopMoves, calculateValidKnightMoves, calculateValidPawnMove, calculateValidQueenMoves, calculateValidRookMoves } from "../helpers/moveHelper";
 import { PointOfView, Square, WhitePOVSquares, BlackPOVSquares } from "../helpers/squareHelper";
 
 const Board: Component = () => {
@@ -74,6 +74,11 @@ const Board: Component = () => {
         if (id.startsWith("wb") || id.startsWith("bb")) {
             validSquares = calculateValidBishopMoves(piecesPool, piece);
         }
+
+        if (id.startsWith("wq") || id.startsWith("bq")) {
+            validSquares = calculateValidQueenMoves(piecesPool, piece);
+        }
+
         createActiveSquares(activeSquarePool, validSquares, piece);
     }
 
@@ -152,7 +157,7 @@ const Board: Component = () => {
                 <div id="bb1" class="piece bb square-20" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bb2" class="piece bb square-50" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bk" class="piece bk square-40"></div> 
-                <div id="bq" class="piece bq square-30"></div> 
+                <div id="bq" class="piece bq square-30" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bp1" class="piece bp square-01" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bp2" class="piece bp square-11" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="bp3" class="piece bp square-21" onclick={(e) => onPieceSelect(e)}></div> 
@@ -169,7 +174,7 @@ const Board: Component = () => {
                 <div id="wb1" class="piece wb square-27" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wb2" class="piece wb square-57" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wk" class="piece wk square-47"></div> 
-                <div id="wq" class="piece wq square-37"></div> 
+                <div id="wq" class="piece wq square-37" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wp1" class="piece wp square-06" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wp2" class="piece wp square-16" onclick={(e) => onPieceSelect(e)}></div> 
                 <div id="wp3" class="piece wp square-26" onclick={(e) => onPieceSelect(e)}></div> 
